@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>账单详情</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<section>
+    <div class="biTop">买买提单号：<span></span></div>
+    <div class="biTitle">
+        <img />
+        <p></p>
+        <div class="clear"></div>
+    </div>
+    <div class="biPrice">
+        <div class="biPCon">
+            <p><span class="fr">商品总额：￥<samp class="biPsam1"></samp></span></p>
+            <p><span class="fl">首付：￥<samp class="biPsam2"></samp></span><span class="fr">分期金额：￥<samp class="biPsam3"></samp></span></p>
+            <p><span class="fl">分期数：<samp class="biPsam4"></samp></span><span class="fr">每期还款：￥<samp class="biPsam5"></samp></span></p>
+        </div>
+    </div>
+    <div class="biAg"></div>
+</section>
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/common.js"></script>
+<script src="js/getOpenId.js"></script>
+<script>
+$(function(){
+	var Request = new Object();
+	Request = GetRequest(); 
+	var detail = Request["detail"];
+	$.get(basePath+"/data/bill/wechat/bill_detail/"+detail,function(data){
+		if(data.status == 0){
+			$(".biTop span").text(data.data.orderNo);
+			$(".biTitle img").attr("src",data.data.logo);
+			$(".biTitle p").text(data.data.goodsNotes);
+			$(".biPsam1").text(data.data.amount);
+			$(".biPsam2").text(data.data.firstPay);
+			$(".biPsam3").text(data.data.loadAmount);
+			$(".biPsam4").text(data.data.periods+"期");
+			$(".biPsam5").text(data.data.monthAmount);
+				
+			$.each(data.data.subBills,function(i,item){
+				var div = "<div class='biAOpt'><p><span class='fl'>第"+item.sbSn+"期";
+				if(item.sbStatus == 2){
+					div += " <samp>已还款</samp></span><span class='fr'>￥"+item.sbPayAmount+"</span></p><p><span class='fl'>还款日"+(item.strSbPayDate==null?"":item.strSbPayDate)+"</span><span class='fr'><samp>(含手续费"+item.sbPayFee+")</samp></span></p></div>";
+				}else{
+					var sign = item.sign;
+					if(sign == "OVERDUE"){
+						div += " <samp>未还款</samp><i class='biAOI'>逾期账单</i></span><span class='fr'>￥"+item.sbPayAmount+"</span></p><p><span class='fl'>还款日"+(item.strSbPayDate==null?"":item.strSbPayDate)+"</span><span class='fr'><samp>(含手续费"+item.sbPayFee+")</samp></span></p></div>";
+					}else if(sign == "THISPERIODS"){
+						div += " <samp>未还款</samp><i>本期账单</i></span><span class='fr'>￥"+item.sbPayAmount+"</span></p><p><span class='fl'>还款日"+(item.strSbPayDate==null?"":item.strSbPayDate)+"</span><span class='fr'><samp>(含手续费"+item.sbPayFee+")</samp></span></p></div>";
+					}else{
+						div += " <samp>未还款</samp></span><span class='fr'>￥"+item.sbPayAmount+"</span></p><p><span class='fl'>还款日"+(item.strSbPayDate==null?"":item.strSbPayDate)+"</span><span class='fr'><samp>(含手续费"+item.sbPayFee+")</samp></span></p></div>";
+					}
+				}
+				
+				$(div).appendTo(".biAg");
+			});
+		}else{
+		}
+	});
+}); 
+</script>
+</body>
+</html>

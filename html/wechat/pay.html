@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>支付</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<section>
+<div class="pay">
+    <div class="payInfo">
+        <p>　订单号：<span class="payIspa1"></span></p>
+        <p>商品信息：<span class="payIspa2"></span></p>
+        <p>支付类型：<span>首付</span></p>
+    </div>
+    <div class="payTitle">付款详情</div>
+    <div class="payMoney">
+        <p>总额<span class="payIspa3"></span></p>
+        <!--<a href="javascript:">优惠券抵扣<img src="images/set_a.png" /><samp>无优惠券</samp></a>-->
+    </div>
+    <div class="payTitle">支付方式</div>
+    <div class="payWay">
+        <div class="payWOpt">
+            <img src="images/pay_wx.png" class="fl" />
+            <span>微信支付</span>
+            <img src="images/chexcked.png" class="fr" />
+        </div>
+    </div>
+    <a href="javascript:" class="editFsub">确认支付</a>
+    <!--<div class="payTime"><img src="images/time.png" />支付剩余时间 ：<span class="hour"></span>:<span class="minute"></span>:<span class="second"></span></div>-->
+    <div class="payTime"><img src="images/time.png" />请在审核通过后4小时内支付完成</div>
+</div>
+</section>
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script src="http://pv.sohu.com/cityjson"></script>
+<script src="js/common.js"></script>
+<script>
+    var timer;
+	var appId,timeStamp,nonceStr,packageStr,signType,paySign;
+    $(function(){
+		var Request = new Object();
+		Request = GetRequest(); 
+		var orderInfo = Request["orderInfo"];
+        orderInfo = decodeURIComponent(orderInfo);
+		orderInfo = JSON.parse(orderInfo);
+		
+		$(".payIspa1").text(orderInfo.orderId);
+		$(".payIspa2").text(orderInfo.goodsNotes);
+		$(".payIspa3").text(orderInfo.amount);
+
+        //获取时间戳
+		//$.get(basePath+"/wechatuser/getLastTime.do?orderNo="+orderInfo.orderId,function(data){
+//			if(data.status == 0){
+//				countDown(data.data,".hour",".minute",".second");
+//			}else{
+//				textLog(data.message);
+//			}
+//		});
+        
+		getJsApiconfig();
+		
+		//微信支付
+		$.getJSON(basePath+"/wechatpay/pay.do?orderNo="+orderInfo.orderId+"&spBillCreateIP="+returnCitySN["cip"],function(data){
+			//alert(JSON.stringify(data));
+			if(data.status == 0){
+				appId = data.data.appId;
+				timeStamp = data.data.timeStamp;
+				nonceStr = data.data.nonceStr;
+				packageStr = data.data.packageStr;
+				signType = data.data.signType;
+				paySign = data.data.paySign; 
+			}else{
+				textLog(data.message);
+			}
+			$(".editFsub").click(function(){
+				   onBridgeReady();
+			});
+		});
+		
+		
+	});
+	
+
+	
+	//倒计时
+	function countDown(time,hour,minute,second){
+        time = time/1000;
+		timer = setInterval(function(){
+			if(time > 0) {
+				time--;
+				var day = Math.floor((time / 3600) / 24);
+				var hour = Math.floor((time / 3600) % 24);
+				var minute = Math.floor((time / 60) % 60);
+				var second = Math.floor(time % 60);
+				
+				$(".hour").text(hour<10?"0"+hour:hour);
+				$(".minute").text(minute<10?"0"+minute:minute);
+				$(".second").text(second<10?"0"+second:second);
+			}else{ 
+				clearInterval(timer);
+			}
+		}, 1000);
+	}   
+	
+	//支付
+	function onBridgeReady(){
+		//alert("appId:"+appId+"timeStamp"+timeStamp);
+	   WeixinJSBridge.invoke(
+		   'getBrandWCPayRequest', {
+			   "appId":appId,     //公众号名称，由商户传入     
+			   "timeStamp":timeStamp+"",         //时间戳，自1970年以来的秒数     
+			   "nonceStr":nonceStr, //随机串     
+			   "package":"prepay_id="+packageStr,     
+			   "signType":signType,         //微信签名方式：     
+			   "paySign":paySign //微信签名 
+		   },
+		   function(res){    
+			   if(res.err_msg == "get_brand_wcpay_request:ok"){
+				   textLog("支付成功");
+				   clearInterval(timer);
+				   window.location.href = "paySuccess.html";
+			   }     // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回    ok，但并不保证它绝对可靠。 
+		   }
+	   ); 
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+.inbody{
+	margin: 0px;
+	padding: 0px;
+	height: 100%;
+	width: 100%;
+	background-color:#f6f6f6;
+}
+.HeadArea{
+	background-color:#ffffff;
+	height:13.33rem;
+}
+.uploadButton{
+	width:25rem;
+	height:3.66rem;
+	margin:0 auto;
+	line-height:3.66rem;
+	text-align:center;
+	background-color:#e75712;
+	color:#ffffff;
+	font-size:1.41rem;
+	margin-top: 0.83rem;
+}
+.inputTextE{
+	width:100%;
+	height:5.83rem;
+	border: none;
+}
+
+.img_ele{
+	width:5.58rem;
+	height:5.58rem;
+	margin-left: 0.83rem;
+	margin-top: 0.83rem;
+}

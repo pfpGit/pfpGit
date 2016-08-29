@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>我要分期</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<section>
+<div class="stag">
+    <div class="stLogo"><img src="images/st_logo.png" /></div>
+    <textarea placeholder="请粘贴商城的商品页面链接"></textarea>
+    <a href="javascript:" class="stSub">我要分期</a>
+    <div class="stBot">
+        <p>分期购买流程</p>
+        <img src="images/st_step.png" />
+    </div>   
+    <div class="stHelp"><img src="images/help.png" /><a href="javascript:" onClick="help()">下单帮助</a></div>
+</div>
+</section>
+<div class="pop">
+    <div class="popBg"></div>
+    <div class="stHCon"><img src="images/help_detail.png" /><a href="javascript:popClose()"><img src="images/stClose.png" /></a></div>
+</div>
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/common.js"></script>
+<script src="js/input.js"></script>
+<script>
+    $(".stSub").click(function(){
+		var text = $("textarea").val();
+		reg = /(http|ftp|https):\/\/[\w\-_]+(\.[\w\-_]+)+([\w\-\.,@?^=%&amp;:/~\+#]*[\w\-\@?^=%&amp;/~\+#])?/;
+		if( text == ""){
+			textLog("商品链接不能为空");
+			return;
+		}
+		if(text.match(reg)){
+			location.href = "stagesStep.html?url="+text.match(reg)[0];
+		}else{
+			textLog("请输入正确的url");
+		}
+	})
+	
+	function help(){
+		$(".popBg").height($(window).height()+$(window).scrollTop());
+		$(".pop").show();
+	}
+	
+	function popClose(){
+		$(".pop").hide();
+	}
+</script>
+</body>
+</html>

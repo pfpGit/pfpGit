@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>意见反馈</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<section>
+    <div class="editForm">
+        <div class="editFcon">
+            <div class="editFtext"><textarea placeholder="请留下您的宝贵意见" id="feedback"></textarea></div>
+            <div class="editFopt">
+                <input type="text" placeholder="请输入您的称呼(选填)" id="name">
+                <i class="iDele" onClick="iDele(this)"><img src="images/delete.png" /></i>
+            </div>
+            <div class="editFopt">
+                <input type="text" placeholder="请选输入您的手机号(选填)" id="tel">
+                <i class="iDele" onClick="iDele(this)"><img src="images/delete.png" /></i>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="editFsub">提交</a>
+</section>
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/common.js"></script>
+<script src="js/input.js"></script>
+<script>
+    var time;
+    $(function(){
+		$("#feedback").keyup(function(){
+			cut();
+		})
+		$("#feedback").blur(function(){
+			cut();
+		})
+		
+		$(".editFsub").click(function(){
+			var feedback = $("#feedback").val();
+			if(feedback == ""){
+				textLog("请留下您的宝贵意见");
+				return;
+			}
+			var telReg = /^(13[0-9]|14[0-9]|15[0-9]|18[0-9])\d{8}$/;
+			var userTel = $("#tel").val();
+			if(userTel == ""){
+				textLog("请输入手机号码");
+				return;
+			}else if(!telReg.test(userTel)){
+				textLog("请输入正确的手机号码");
+				return;
+			}
+			$.post(basePath+"/GW/question/addOpinion.do",{content:feedback,callName:$("#name").val(),mobile:$("#tel").val(),type:"2",_method:"post"},function(data){
+				$("#feedback").val("");
+				if(data.status=='0'){
+					textLog("提交成功");
+					time = setTimeout(function(){
+						location.href="index.html";
+					},2000);
+				}else{
+					textLog("提交失败");
+				}
+				
+			})
+		})
+	})
+	function cut(){
+		var value = $("#feedback").val();
+		if(value.length>=100){
+			$("#feedback").val(value.substring(0,99));
+		}
+	}
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>退/换货进度</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<section>
+<div class="afDeta">
+    <div class="afDTop">
+        <p>　订单号：<span class="afSpan1"></span></p>
+        <p>服务单号：<span class="afSpan2"></span></p>
+        <p>问题描述：<span class="afSpan3"></span></p>
+        <p>处理进度：<span class="afSpan4"></span></p>
+        <p>处理时间：<span class="afSpan5"></span></p>
+        <p>申请时间：<span class="afSpan6"></span></p>
+    </div>
+    <div class="afDCon">
+        <div class="afDTitle">退/换货进度</div>
+        <div class="afDel">
+        </div>
+    </div>
+</div>
+</section>
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/common.js"></script>
+<script>
+var assServiceId;
+$(function(){
+    var Request = new Object();
+	Request = GetRequest(); 
+	assServiceId = Request["assServiceId"];
+	$.get(basePath+"/wechatuser/wxReturnGoodsDetail.do?assServiceId="+assServiceId,function(data){
+		if(data.status == 0){
+			$(".afSpan1").text(data.data.orderSerialNumber);
+			$(".afSpan2").text(assServiceId);
+			$(".afSpan3").text(data.data.assReason);
+			$(".afSpan4").text(data.data.assGoodsStatusStr);
+			$(".afSpan5").text(new Date(data.data.assDealTime).Format("yyyy-MM-dd hh:mm:ss"));
+			$(".afSpan6").text(new Date(data.data.assApplyTime).Format("yyyy-MM-dd hh:mm:ss"));
+		}else{
+			textLog(data.message);
+		}
+	})
+	
+	$.get(basePath+"/wechatuser/wxGetPCReturnProgress.do?assServiceId="+assServiceId,function(data){
+		if(data.status == 0){
+			$.each(data.data,function(i,item){
+				var div = "<div class='afDOpt'><p>"+item.rpDescribe+"</p><p>"+new Date(item.rpDealTime).Format("yyyy-MM-dd hh:mm:ss")+"</p></div>";
+				$(div).appendTo(".afDel");
+			})
+		}else{
+			textLog(data.message);
+		}
+	})
+})
+</script>
+</body>
+</html>

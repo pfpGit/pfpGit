@@ -1,0 +1,174 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>个人中心</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<section>
+    <div class="info">
+        <div class="inCon" id="loginBefo">
+            <div class="inCIcon"></div>
+            <a href="codeLogin.html" class="inLogin">登录&nbsp;|&nbsp;注册</a>
+        </div>
+        <div class="inCon hidden" id="loginAfter">
+            <div class="inCIcon" id="inCIcon"></div>
+            <div class="inCen">
+                <p></p>
+                <a href="accountSetting.html">账号设置</a>
+            </div>
+            <a href="message.html" class="inFr"><img src="images/inMess.png" /><span></span></a>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <a href="order_all.html?order_page=05" class="inJump">我的订单<img src="images/set_a.png" /><span>查看全部订单</span></a>
+    <div class="inClass">
+        <a href="order_all.html?order_page=01">
+            <span class="hidden" id="verifyNum"></span>
+            <img src="images/inClas1.png" />
+            <p>待审核</p>
+        </a>
+        <a href="order_all.html?order_page=02">
+            <span class="hidden" id="signNum"></span>
+            <img src="images/inClas2.png" />
+            <p>待签署</p>
+        </a>
+        <a href="order_all.html?order_page=03">
+            <span class="hidden" id="firstNum"></span>
+            <img src="images/inClas3.png" />
+            <p>待首付</p>
+        </a>
+        <a href="order_all.html?order_page=04">
+            <span class="hidden" id="collectNum"></span>
+            <img src="images/inClas4.png" />
+            <p>待收货</p>
+        </a>
+        <a href="afterSale.html">
+            <span class="hidden" id="returnNum"></span>
+            <img src="images/inClas5.png" />
+            <p>退/换货</p>
+        </a>
+    </div>
+    <div class="inOrder">
+        <div class="inOTop">我的账单</div>
+        <div class="inOCon">
+            <a class="inOpt fl" href="this_month_pending_bills.html">
+                <img src="images/inOpt1.png" />
+                <p>本月待还</p>
+                <span class="hidden"></span>
+            </a>
+            <a class="inOpt fr" href="this_month_pending_bills.html">
+                <img src="images/inOpt2.png" />
+                <p>全部账单</p>
+                <samp class="hidden"></samp>
+            </a>
+            <div class="clear"></div>
+        </div>
+    </div>
+    <a href="help.html" class="inJump">帮助中心<img src="images/set_a.png" /></a>
+    <a href="feedback.html" class="inJump">意见反馈<img src="images/set_a.png" /></a>
+</section>
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/common.js"></script>
+<script src="js/getOpenId.js"></script>
+<script>
+    $(function(){
+		$.get(basePath+"/wechatuser/isLogined.do",function(data){
+			if(data.status == 0){
+				$("#loginBefo").hide();
+				$("#loginAfter").show();
+				var mobi = data.data.mobile;
+				var replaceStr = mobi.substring(3,7);
+				mobi = mobi.replace(replaceStr,"****");
+				$("#loginAfter").find("p").text(mobi);
+				
+				//获取微信头像
+				$.get(basePath+"/wechatuser/getWXImg.do",function(data){
+					if(data.status == 0){
+						var src = data.data.headImgurl;
+						var img = "<img src="+src+">";
+						$(img).appendTo("#inCIcon");
+					}
+				})
+				
+				//获取消息数
+				$.get(basePath+"/data/messages/getNoReadMessageCount.do",function(data){
+					if(data.status == 0){
+						if(data.data == 0){
+							$("#loginAfter").find("span").hide()
+						}else{
+							$("#loginAfter").find("span").show();
+							$("#loginAfter").find("span").text(data.data);
+						}
+					}
+				})
+				
+				//订单分类数量
+				$.get(basePath+"/data/purchase/wechat/order_number.do",function(data){
+					if(data.status == 0){
+						if(data.data.verifyNum != 0){
+							$("#verifyNum").show();
+							$("#verifyNum").text(data.data.verifyNum);
+						}
+						if(data.data.signNum != 0){
+							$("#signNum").show();
+							$("#signNum").text(data.data.signNum);
+						}
+						if(data.data.firstNum != 0){
+							$("#firstNum").show();
+							$("#firstNum").text(data.data.firstNum);
+						}
+						if(data.data.collectNum != 0){
+							$("#collectNum").show();
+							$("#collectNum").text(data.data.collectNum);
+						}
+						if(data.data.returnNum != 0){
+							$("#returnNum").show();
+							$("#returnNum").text(data.data.returnNum);
+						}
+					}
+				});
+				
+				//本月总还款额
+				$.get(basePath+"/data/bill/wechat/month_payment",function(data){
+					if(data.status == 0){
+						if(data.data != 0){
+							$(".inOpt").find("span").show();
+							var text = "￥"+data.data;
+							$(".inOpt").find("span").text(text);
+						}
+					}
+				});
+				
+				//获取分期数
+				var bills = [];
+				$.get(basePath+"/data/bill/find.do",function(data){
+					if(data.status == 0){
+						$.each(data.data,function(i,item){
+							if(item.billStatus == 1){
+								bills.push(item);
+							}
+						})
+						if(bills.length != 0){
+							$(".inOpt").find("samp").show();
+							var text = "剩"+ bills.length +"期未还";
+							$(".inOpt").find("samp").text(text);
+						}
+					}
+				});
+			}else{
+				$("#loginBefo").show();
+				$("#loginAfter").hide();
+			}
+		});
+	});
+</script>
+</body>
+</html>

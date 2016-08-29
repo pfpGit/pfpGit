@@ -1,0 +1,52 @@
+.title_info{
+	box-sizing: border-box;
+	height:3.33rem;
+	line-height:3.33rem;
+	background-color:#ffffff;
+	margin-bottom: 10px;
+	padding-left: 0.83rem;
+}
+
+.bodyBox{
+	box-sizing:border-box;
+	padding-top:0.83rem;
+	padding-bottom:0.83rem;
+	background-color:#ffffff;
+}
+
+.the_progress{
+	background-color:#ffffff;
+	background-image:url('../img/probg.png');
+	background-repeat: repeat-y;
+	background-position:2.08rem;
+}
+.status .left{
+	width:4.9rem;
+	float:left;
+}
+.status_on .left img{
+	width:1.08rem;
+	height:1.08rem;
+	margin-left:2rem;
+}
+.status_off .left img{
+	width:1.08rem;
+	height:1.08rem;
+	margin-left:2rem;
+}
+
+.status .right{
+	width:72%;
+	text-align:left;
+	float:left;
+	border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #efefef;
+    margin-right: 0.83rem;
+    margin-bottom: 0.83rem;
+    padding-bottom: 0.83rem;
+}
+
+.status_on .right{
+	color:#ff6700;
+}

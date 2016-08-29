@@ -1,0 +1,87 @@
+.fixboxmenu tr th{
+	font-size: 1rem;
+}
+.fixboxmenuLeft{
+	float: left;
+	width: 50%;
+	height: 100%;
+}
+.fixboxmenuRight{
+	float: right;
+	width: 50%;
+	height: 100%;
+}
+
+.NowlistBodyBox{
+	width: 100%;
+	padding-bottom:0.5rem;
+	background-color: #ffffff;
+    margin-top: 16px;
+	display:block;
+}
+
+.NowlistBodyBoxLeft{
+	float: left;
+	width: 10%;
+	padding-top: 1rem;
+}
+
+.NowlistBodyBoxLeft img{
+	margin-left: 0.83rem;
+}
+.NowlistBodyBoxMiddle{
+	float: left;
+	width: 80%;
+	font-size: 0.85rem;
+    padding-top: 1rem;
+}
+.NowlistBodyBoxRight{
+	float: left;
+	width: 10%;
+	padding-top: 2.75rem;
+}
+.NowlistBodyBoxRight img{
+	width: 0.75rem;
+	height: 1.25rem;
+}
+
+.footfixBox{
+	height: 100%;
+}
+.footfixBoxLeft{
+	font-size: 1rem;
+	float: left;
+	width: 60%;
+	line-height: 4.16rem;
+}
+.footfixBoxRight{
+	font-size: 1.25rem;
+	float: left;
+	width: 40%;
+	height: 100%;
+	text-align: center;
+	background-color: #ff6700;
+	color: #ffffff;
+    line-height: 4.16rem;
+}
+.asdee{
+	border-style: solid;
+	border-width: 1px;
+	border-color: #ff2830;
+	color: #ff2830;
+	margin-left: 20px;
+	padding: 3px;
+	font-size: 0.6rem;
+}
+
+.asooodee{
+	border-style: solid;
+	border-width: 1px;
+	border-color: #fbae52;
+	color: #fbae52;
+	border-radius: 3px;
+	margin-left: 20px;
+	padding: 3px;
+	font-size: 0.6rem;
+}
+.sbStatus{color: #999; margin-left: 20px; padding: 3px; font-size: 0.6rem;}

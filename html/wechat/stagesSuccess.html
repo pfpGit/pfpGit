@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>分期成功</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<section>
+<div class="stSucc">
+    <div class="stSuTop">
+        <img src="images/success.png" />
+        <p>分期订单提交成功</p>
+    </div>
+    <div class="stSuState">
+      <!--   我们已为您生成一个初始账号，初始密码302913；
+        <a href="editPassword.html">立即修改密码》</a> -->
+    </div>
+    <a href="order_all.html?order_page=05" class="editFsub">查看订单</a>
+</div>
+</section>
+
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/common.js"></script>
+<script src="js/input.js"></script>
+<script>
+$(function() {
+	var Request = new Object();
+	Request = GetRequest(); 
+	var pwd= Request["pwd"];
+	if(pwd!=null){
+		$(".stSuState").html("我们已为您生成一个初始账号，初始密码"+pwd+"；<a href='editPassword.html'>《立即修改密码》</a>");
+	}
+});
+//获取手机验证码
+function iTime(obj){
+	var reg = /^(13[0-9]|14[0-9]|15[0-9]|18[0-9])\d{8}$/;
+	var tel = $("#tel").val();
+	if(tel == ""){
+		textLog("请输入手机号");
+		return;
+	}else if(!reg.test(tel)){
+		textLog("请输入正确的手机号");
+		return;
+	}
+	$.get(basePath+"/data/user/"+$("#tel").val()+"?type=3",function(data){
+		textLog(data.message);
+		if(data.status == 0){
+			$(obj).hide();
+			$(obj).next().show();
+			var n = $(obj).next().children("samp").text();
+			var time;
+			time = setInterval(function(){
+				n--;
+				$(obj).next().children("samp").text(n);
+				if(n == 0){
+					clearInterval(time);
+					$(obj).next().children("samp").text(60);
+					$(obj).show();
+					$(obj).next().hide();
+				}
+			},1000);
+		}
+	})
+}    
+</script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>账号登录</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<section>
+    <div class="editForm">
+        <div class="editFcon">
+            <div class="editFopt">
+                <input type="text" placeholder="手机号" id="tel">
+                <i class="iDele" onClick="iDele(this)"><img src="images/delete.png" /></i>
+            </div>
+            <div class="editFopt">
+                <input type="password" placeholder="密码" class="iClose">
+                <input type="text" placeholder="密码" class="iOpen">
+                <i onClick="iOpen(this)"><img src="images/close.png"></i>
+                <i class="iDele" onClick="iDele(this)"><img src="images/delete.png" /></i>
+            </div>
+            <div class="editFopt" id="codeF" style="display:none;">
+                <input type="text" placeholder="验证码" class="editFinp" id="code">
+                <img onclick="changeImg()" id="codeImg" />
+            </div>
+        </div>
+    </div>
+    <a href="javascript:" class="editFsub">登录</a>   
+    <a href="forgotPassword.html" class="forBtn">忘记密码</a> 
+</section>
+<footer>
+    <a class="fl" id="codeLogin">验证码登录</a>
+    <a href="register.html" class="fr">注册</a>
+</footer>
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/common.js"></script>
+<script src="js/jquery.cookie.js"></script>
+<script src="js/input.js"></script>
+<script>
+    var n = 0;
+	$(function(){
+		$("#codeImg").attr("src",basePath+"/data/user/imageCode.do");
+		var Request = new Object();
+		Request = GetRequest(); 
+		var jumpUrl = Request["url"];
+		if(typeof(jumpUrl) == "undefined"){
+			$("#codeLogin").attr("href","codeLogin.html");
+		}else{
+			$("#codeLogin").attr("href","codeLogin.html?url="+jumpUrl);
+		}
+		$("#code").blur(function(){
+			if($("#code").val() == ""){
+				textLog("请输入验证码");
+				return;
+			}
+			$.get(basePath+"/data/user/checkImgCode.do",{imgCode:$("#code").val()},function(data){
+				if(data.status == 1){
+					changeImg();
+					textLog(data.message);
+				}
+			});
+		});
+		
+		var reg = /^(17[0-9]|13[0-9]|14[0-9]|15[0-9]|18[0-9])\d{8}$/;
+		var psdReg = /^[a-z0-9_-]{6,16}$/;
+		$(".editFsub").click(function(){
+			var tel = $("#tel").val();
+			if(tel == ""){
+				textLog("请输入手机号");
+				return;
+			}else if(!reg.test(tel)){
+				textLog("手机号码为11位数字");
+				return;
+			}
+			
+			if($("#codeF").css("display") == "block"){
+				if($("#code").val() == ""){
+					textLog("请输入验证码");
+					return;
+				}
+			}
+			
+			//密码
+			var psd;
+			if($(".iClose").css("display") == "none"){
+				psd = $(".iOpen").val();
+			}else{
+				psd = $(".iClose").val();
+			}
+			
+			if(psd == ""){
+				textLog("请输入密码");
+				return;
+			}else if(!psdReg.test(psd)){
+				textLog("密码为6-16位字母或数字");
+				return;
+			}
+					
+			$.getJSON(basePath+"/wechatuser/wxUserLogin.do",{mobile:tel,password:psd},function(data){
+				if(data.status == 0){
+					
+					$.cookie("mobile",data.data.mobile,{expires:30});
+					$.cookie("userId",data.data.id,{expires:30});
+					if(typeof(jumpUrl) == "undefined"){
+						location.href = "index.html"
+					}else{
+						location.href = jumpUrl;
+					}
+				}else{
+					textLog(data.message);
+					n++;
+					if(n >= 2){
+						$("#codeF").css("display","block");
+					}
+				}
+			});
+		});
+	})
+	
+	//更换验证码
+	function changeImg(){
+		$("#codeImg").attr("src",basePath+"/data/user/imageCode.do?" + Math.random());
+	}
+</script>
+</body>
+</html>

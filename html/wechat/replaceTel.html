@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>修改手机号码</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<section>
+    <div class="editForm">
+        <div class="editFcon">
+            <div class="editFopt" id="oldTel"></div>
+            <div class="editFopt">
+                <input type="text" placeholder="短信验证码" class="editFinp" id="smsCode">
+                <a href="javascript:" onClick="iTime(this)">发送验证码</a>
+                <span class="hidden"><samp>60</samp>秒后重发</span>
+                <i class="iDele" onClick="iDele(this)">
+                <img src="images/delete.png" /></i>
+            </div>
+        </div>
+    </div>
+    <a href="#" class="editFsub">下一步</a>    
+</section>
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/common.js"></script>
+<script src="js/jquery.cookie.js"></script>
+<script src="js/input.js"></script>
+<script>
+    var oldTel;
+    $(function(){
+		oldTel = $.cookie("mobile");
+		if(oldTel==null||oldTel == undefined){
+			window.location.href = "login.html";
+		}
+		var userId = $.cookie("userId");
+		var replaceStr = oldTel.substring(3,7);
+	    oldReplace = oldTel.replace(replaceStr,"****");
+		$("#oldTel").text(oldReplace);
+		
+		$(".editFsub").click(function(){
+			if(smsCode == ""){
+				textLog("请输入短信验证码");
+				return;
+			}
+			$.get(basePath+"/data/user/checkVcode.do",{mobile:oldTel,vCode:$("#smsCode").val()},function(data){
+				if(data.status == 0){
+					location.href = "replaceTelNext.html";
+				}else{
+					textLog(data.message);
+				}
+			})
+		})
+	})
+	
+	//更换验证码
+	function changeImg(){
+		$("#codeImg").attr("src",basePath+"/data/user/imageCode.do?" + Math.random());
+	}
+	
+	//获取手机验证码
+	function iTime(obj){
+		$.get(basePath+"/data/user/"+oldTel+"?type=6",function(data){
+			textLog(data.message);
+			if(data.status == 0){
+				$(obj).hide();
+				$(obj).next().show();
+				var n = $(obj).next().children("samp").text();
+				var time;
+				time = setInterval(function(){
+					n--;
+					$(obj).next().children("samp").text(n);
+					if(n == 0){
+						clearInterval(time);
+						$(obj).next().children("samp").text(60);
+						$(obj).show();
+						$(obj).next().hide();
+					}
+				},1000);
+			}
+		})
+	}
+</script>
+</body>
+</html>

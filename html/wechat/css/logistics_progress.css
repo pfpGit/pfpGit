@@ -1,0 +1,21 @@
+.aaa{
+	height: 4.2rem;
+	font-size: 0.85rem;
+}
+.aaa_left{
+	float: left;
+	width: 18.78rem;
+	padding-top: 0.71rem;
+	padding-left: 0.71rem;
+}
+.aaa_right{
+	float: right;
+	width: 3.92rem;
+}
+.bbb{
+	height: 2.32rem;
+	font-size: 0.85rem;
+	text-align: center;
+	background-color: #f6f6f6;
+	padding-top: 20px;
+}

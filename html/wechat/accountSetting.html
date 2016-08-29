@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>账号设置</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<section>
+    <div class="setCon">
+        <a href="editPassword.html">
+            <div class="setOpt"><p>修改登录密码</p><span>建议您定期修改密码，保护账户安全</span></div>
+            <img src="images/set_a.png" />
+        </a>
+        <a href="replaceTel.html" class="setCa">
+            <div class="setOpt"><p>更换手机号码</p><span>若验证手机已丢失或停用，请立即更换</span></div>
+            <img src="images/set_a.png" />
+        </a>
+    </div>
+    <a href="javascript:" class="exit">退出登录</a>
+</section>
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/common.js"></script>
+<script>
+    $(function(){
+		$(".exit").click(function(){
+			conFirm("系统提示","您确定要退出登录吗",["取消","确定"],requestOutlogin);
+		});
+	})
+	
+	function requestOutlogin(){
+		$.post(basePath+"/wechatuser/outLogined.do",function(data){
+			if(data.status == 1){
+				textLog(data.message);
+			}else{
+				location.href = "login.html";
+			}
+		});
+	}
+</script>
+</body>
+</html>

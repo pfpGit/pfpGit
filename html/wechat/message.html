@@ -1,0 +1,427 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>消息中心</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <script src="package/jquery-1.12.3.min.js"></script>
+    <script src="js/common.js"></script>
+	<script src="package/bootstrap-3.3.5-dist/js/bootstrap.min.js?vt=20123"></script>
+	<script src="package/dropload-gh-pages/dist/dropload.js?vt=20123"></script>
+</head>
+<style>
+*{
+    margin: 0;
+    padding:0;
+    -webkit-tap-highlight-color:rgba(0,0,0,0);
+    -webkit-text-size-adjust:none;
+}
+.outer{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction:column;
+    -webkit-box-orient:vertical;
+    box-orient:vertical;
+    -webkit-flex-direction:column;
+    flex-direction:column;
+}
+.header{
+    position: relative;
+    height: 44px;
+    line-height: 44px;
+    border-bottom: 1px solid #ccc;
+    background-color: #eee;
+}
+.header h1{
+    text-align: center;
+    font-size: 2rem;
+    font-weight: normal;
+}
+.header .btn{
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 4em;
+    height: 100%;
+    text-align: center;
+    color: #06c;
+    font-size: 1.4rem;
+    background-color: #ccc;
+}
+.header .btn:active{
+    background-color: #aaa;
+    color: #fff;
+}
+.inner{
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    background-color: #fff;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+}
+.inner .item{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align:center;
+    -webkit-box-align:center;
+    box-align:center;
+    -webkit-align-items:center;
+    align-items:center;
+    padding:3.125%;
+    border-bottom: 1px solid #ddd;
+    color: #333;
+}
+.inner .item img{
+    display: block;
+    width: 40px;
+    height: 40px;
+    border:1px solid #ddd;
+}
+.inner .item h3{
+    display: block;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    width: 100%;
+    max-height: 40px;
+    overflow: hidden;
+    line-height: 20px;
+    margin: 0 10px;
+    font-size: 1.2rem;
+}
+.inner .item .date{
+    display: block;
+    height: 20px;
+    line-height: 20px;
+    color: #999;
+}
+.opacity{
+    -webkit-animation: opacity 0.5s linear;
+    animation: opacity 0.5s linear;
+}
+@-webkit-keyframes opacity {
+    0% {
+        opacity:0;
+    }
+    100% {
+        opacity:1;
+    }
+}
+@keyframes opacity {
+    0% {
+        opacity:0;
+    }
+    100% {
+        opacity:1;
+    }
+}
+
+/* dropload */
+.dropload-up,.dropload-down{
+    position: relative;
+    height: 0;
+    overflow: hidden;
+    -webkit-transform:translate3d(0,0,0);
+    transform:translate3d(0,0,0);
+}
+.dropload-refresh,.dropload-update,.dropload-load{
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 100%;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    -webkit-transform:translate(-50%,0);
+    transform:translate(-50%,0);
+}
+.dropload-load .loading{
+    display: inline-block;
+    height: 15px;
+    width: 15px;
+    border-radius: 100%;
+    margin: 6px;
+    border: 2px solid #666;
+    border-bottom-color: transparent;
+    vertical-align: middle;
+    -webkit-animation: rotate 0.75s 0 linear infinite;
+    animation: rotate 0.75s 0 linear infinite;
+}
+@-webkit-keyframes rotate {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    50% {
+        -webkit-transform: rotate(180deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(180deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+</style>
+<body>
+<section>
+<div class="outer">
+	<div class="inner">
+	    <div class="lists">
+		    <!-- <div class="messOpt">
+		       <div class="messTop">
+		           <img src="images/messIcon1.png" />
+		           <div class="messFr">
+		               <p>优惠活动</p>
+		               <span>11:25</span>
+		           </div>
+		       </div> 
+		       <div class="messCon">尊敬的买买提用户，为保证您的订单xxxx于03月22日15:30成功支付首付人民币1000元；您分期还款金额为人民币3300元，可分三期还款，每期还款金额人民币1100元，每期最迟还款日为15日；如有疑问，请拨打400</div>
+		    </div> -->
+		    
+	    </div>
+	</div> 
+	<a href="javascript:" class="messA" id="moreMsg" style="display:none;margin:auto;text-align:center" >查看更多</a>
+</div>
+
+</section>
+	<script>
+		// dropload
+		var dropload = $('.inner').dropload({
+		    domUp : {
+		        domClass   : 'dropload-up',
+		        domRefresh : '<div class="dropload-refresh">↓下拉刷新</div>',
+		        domUpdate  : '<div class="dropload-update">↑释放更新</div>',
+		        domLoad    : '<div class="dropload-load"><span class="loading"></span>加载中...</div>'
+		    },
+		    domDown : {
+		        domClass   : 'dropload-down',
+		        domRefresh : '<div class="dropload-refresh">↑上拉加载更多</div>',
+		        domUpdate  : '<div class="dropload-update">↓释放加载</div>',
+		        domLoad    : '<div class="dropload-load"><span class="loading"></span>加载中...</div>'
+		    },
+		    loadUpFn : function(me){
+		    	if(isGetAllMsg){
+		    		$(".lists").html("");
+					getAllMsgCount(me);//先获取总数
+		    	}else{
+		    		window.location.reload(); 
+		    	}
+		    	
+		    },
+		    loadDownFn : function(me){
+		    	if(isGetAllMsg){
+		    		getAllMsg(me);
+		    	}else{
+		    		getUnreadMsg(me); 
+		    	}
+		    	
+		    }
+		});
+		//==================查询消息分页================
+		var ableClickMore = false;//查看更多
+		var isGetAllMsg = false;//是否查询所有的信息
+		var totalPage = 0;//总页数
+		var total = 0;//总数
+		var currentPage = 0;
+		var pageSize = 10;//分页大小
+		var testData = {"status": "0", "message": null, "data":[{"type":10, "name": "第8条系统","createTime": "2016-03-31 15:11:23","smContent": "内容33333333333", "userId": 11,"pageSize": null, "pageIndex": null, "id": "8", "title": "标题111" } ,{"type":10, "name": "第9条系统21","createTime": "2016-03-31 15:11:23","smContent": "内容df sdf sdf asdf asdf d asd", "userId": 11,"pageSize": null, "pageIndex": null, "id": "8", "title": "标题2" } ]}; 
+		var testDataCount = {status:"0", data:0, message:null};
+		//查询总数
+		function getUnreadMsgCount(){
+			$.ajax({
+	            type: 'GET',
+	            url: basePath+'/data/messages/getNoReadMessageCount.do',
+	            dataType: 'json',
+	            success: function(data){
+					isLogin(data);
+	            	//data = testDataCount; //测试数据
+	            	if(data.status=='0'){
+	            		total = data.data;//总数
+	            		if(total==0){
+	            			$(".messA").css("display","inline");
+	            			ableClickMore = true;//可以查看更多
+	            			$(".messA").click();
+	            		}else{
+	            			totalPage = Math.floor(total/pageSize);
+							if(total%pageSize!=0){
+								totalPage++;
+	            			}
+	            			getUnreadMsg();//获取用户消息
+	            		}
+	            	}else{
+	            		textLog("加载失败 "+data.message);
+	            	}
+	            },
+	            error: function(xhr, type){
+	                textLog('Ajax error!');
+	            }
+	        });
+		}
+		//加载未读的信息
+		function getUnreadMsg(me){
+			if(currentPage+1>totalPage){
+				$(".messA").css("display","inline");
+    			ableClickMore = true;//可以点击查看更多
+    			me.resetload();
+				return ;
+			}
+			currentPage++;//下一页；
+			$.ajax({
+	            type: 'GET',
+	            url: basePath+'/data/messages/getNoreadmessage.do?pageSize='+pageSize+"&pageIndex="+currentPage,
+	            dataType: 'json',
+	            success: function(data){
+	            	//data = testData; //测试数据
+	            	if(data.status=='0'){
+	            		var list = data.data;
+	            		var result = "";
+	            		for(var obj in list){
+	            			result+='<div class="messOpt">'+
+	            		       '<div class="messTop">'+
+	            		           '<img src="images/messIcon'+list[obj].type+'.png" />'+
+	            		          '<div class="messFr">'+
+	            		               '<p>'+list[obj].title+'</p>'+
+	            		               '<span>'+list[obj].createTime+'</span>'+
+	            		          '</div>'+
+	            		     '</div> '+
+	            		       '<div class="messCon">'+list[obj].smContent+'</div>'+
+	            		    '</div>';
+	            		}
+	            	}else{
+	            		textLog("加载失败 "+data.message);
+	            	}
+	            	 // 为了测试，延迟1秒加载
+	                setTimeout(function(){
+	                	//添加内容
+	            		$('.lists').append(result);
+	                    me.resetload();
+	                },1000);
+	            },
+	            error: function(xhr, type){
+	                textLog('Ajax error!');
+	                me.resetload();
+	            }
+	        });
+		}
+		//加载信息总数
+		function getAllMsgCount(me){
+		    totalPage = 0;//总页数
+		    total = 0;//总数
+		    currentPage = 0;
+			$.ajax({
+	            type: 'GET',
+	            url: basePath+'/data/messages/getMessageCount.do',
+	            dataType: 'json',
+	            success: function(data){
+	            	//  data = {"status": "0", "message": null, "data":[{"type":10, "name": "第8条系统","createTime": "2016-03-31 15:11:23","smContent": "内容33333333333", "userId": 11,"pageSize": null, "pageIndex": null, "id": "8", "title": "标题1已经读消息11" } ,{"type":10, "name": "第9条系统21","createTime": "2016-03-31 15:11:23","smContent": "内容df sdf sdf asdf asdf d asd", "userId": 11,"pageSize": null, "pageIndex": null, "id": "8", "title": "所有的信息2" } ]}; 
+	            	if(data.status=='0'){
+	            		total = data.data;//总数
+	            		if(total==0){
+	            			 //没有消息
+	            		}else{
+	            			totalPage = Math.floor(total/pageSize);
+							if(total%pageSize!=0){
+								totalPage++;
+	            			}
+	            			getAllMsg(me);//获取用户消息
+	            		}
+	            	}else{
+	            		textLog("加载失败 "+data.message);
+	            	}
+	            },
+	            error: function(xhr, type){
+	                textLog('Ajax error!');
+	            }
+	        });
+		} 
+		
+		//加载用户所有的信息
+		function getAllMsg(me){
+			 
+			if(currentPage+1>4){
+				me.resetload();
+				return ;
+			}
+			currentPage++;//下一页；
+			$.ajax({
+	            type: 'GET',
+	            url: basePath+'/data/messages/getAllmessage.do?pageSize='+pageSize+"&pageIndex="+currentPage,
+	            dataType: 'json',
+	            success: function(data){
+	            	//data = testData; //测试数据
+	            	if(data.status=='0'){
+	            		var list = data.data;
+	            		var result = "";
+	            		for(var obj in list){
+	            			result+='<div class="messOpt">'+
+	            		       '<div class="messTop">'+
+	            		           '<img src="images/messIcon'+list[obj].type+'.png" />'+
+	            		          '<div class="messFr">'+
+	            		               '<p>'+list[obj].title+'</p>'+
+	            		               '<span>'+list[obj].createTime+'</span>'+
+	            		          '</div>'+
+	            		     '</div> '+
+	            		       '<div class="messCon">'+list[obj].smContent+'</div>'+
+	            		    '</div>';
+	            		}
+	            	}else{
+	            		textLog("加载失败 "+data.message);
+	            	}
+	            	 // 为了测试，延迟1秒加载
+	                setTimeout(function(){
+	                	//添加内容
+	            		$('.lists').append(result);
+	                    me.resetload();
+	                },1000);
+	            },
+	            error: function(xhr, type){
+	                textLog('Ajax error!');
+	                me.resetload();
+	            }
+	        });
+		}
+		
+		//点击查看更多
+		$(".messA").click(function(){
+			if(!ableClickMore){
+				return ;//不允许点击查看更多
+			}
+			$(".messA").css("display","none");
+			ableClickMore = false;//不可以点击查看更多
+			isGetAllMsg = true;//现在开始就用加载全部消息
+			$(".lists").html("");
+			getAllMsgCount();//先获取总数
+		});
+		//首次加载未读的信息先
+		getUnreadMsgCount();
+	</script>
+
+</body>
+</html>

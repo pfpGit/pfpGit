@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>退/换货</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<section>
+<div class="afAp">
+    <div class="afATop"><img /><a></a></div>
+    <div class="afAType">
+        <p>售后类型</p>
+        <a href="javascript:" assType=1 onClick="afAType(this)">退换</a>
+        <a href="javascript:" assType=2 class="afATa" onClick="afAType(this)">换货</a>
+    </div>
+    <div class="afDesc">
+        <p>问题描述</p>
+        <textarea placeholder="请您描述详细问题"></textarea>
+        <div class="afDImg">
+            <div id="afDIOpt"></div>
+            <div class="afDIOpt" id="addImg">
+                <img src="images/afDAdd.png" class="afAImg" />
+            </div>
+        </div>
+        <span>最多上传3张</span>
+    </div>
+    <a href="javascript:" class="editFsub">提交</a>
+</div>
+</section>
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/common.js"></script>
+<script>
+var assType;
+var orderType;
+$(function(){
+	var Request = new Object();
+	Request = GetRequest(); 
+	var afSaInfo = Request["afSaInfo"];
+	afSaInfo = decodeURIComponent(afSaInfo);
+	afSaInfo = JSON.parse(afSaInfo);
+	console.log(afSaInfo);
+	
+	$(".afATop img").attr("src",afSaInfo.assGoodsImage);
+	$(".afATop a").text(afSaInfo.assGoodsName);
+	$(".afATop a").attr("href",afSaInfo.assGoodsUrl);
+	if(afSaInfo.assType == "代购"){
+		orderType = 1;
+	}else{
+		orderType = 2;
+	}
+	
+	assType = $(".afATa").attr("assType");
+	//添加图片
+	$(".afAImg").click(function(){
+		var div = "<div class='afDIOpt'><img src='images/80_80.jpg' /><a href='javascript:'onClick='delImg(this)'><img src='images/stClose.png' /></a></div>";
+		$(div).appendTo("#afDIOpt");
+		var len = $("#afDIOpt").children("div").length;
+		if(len == 3){
+			$("#addImg").hide();
+		}
+	});
+	
+	$(".editFsub").click(function(){
+		var text = $("textarea").val();
+		var imgLen = $("#afDIOpt").children("div").length;
+		if(text == ""){
+			textLog("请您描述详细问题");
+			return;
+		}
+		if(imgLen == 0){
+			textLog("请上传图片");
+			return;
+		}
+		
+		var parm = {"purchaseId":afSaInfo.purchaseId,"assType":assType,"assReason":text,"assPicture":"这里是你要加的图片字符串","assGoodsName":afSaInfo.assGoodsName,"assGoodsUrl":afSaInfo.assGoodsUrl,"channelId":afSaInfo.channelId,"orderType":orderType,"assGoodsImage":afSaInfo.assGoodsImage,"_method":"POST"};
+		$.ajax({
+			type: 'POST',
+			url: basePath+"/wechatuser/wxApplyReturnGoods.do",
+			data:parm,
+			dataType: 'json',
+			success: function(data){
+				if(data.status == 0){
+					console.log(data);
+					location.href = "afterSaleSuccess.html"
+				}else{
+					textLog(data.message);
+				}
+			}
+		});
+	});
+})
+
+//删除图片
+function delImg(obj){
+	$(obj).parent().remove();
+	$("#addImg").show();
+}
+
+//选择退换货
+function afAType(obj){
+	$(obj).addClass("afATa").siblings().removeClass("afATa");
+	assType = $(obj).attr("assType");
+}
+</script>
+</body>
+</html>

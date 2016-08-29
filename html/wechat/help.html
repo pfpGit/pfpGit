@@ -1,0 +1,284 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>帮助中心</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<section>
+<div class="help">
+    <div class="heTop">
+        <div class="heTCon">
+            <div class="heSeac">
+                <img src="images/seach.png" class="fl" />
+                <input type="text" placeholder="请输入关键字，如订单" />
+                <i class="iDele hidden" onClick="iDele(this)"><img src="images/delete.png" class="fr" /></i>
+            </div>
+            <a href="#" onClick="Search(this)">搜索</a>
+        </div>
+        <div class="heRes hidden"><img src="images/heRes.png" />找到<span></span></div>
+        <div class="heClass">
+            <a href="javascript:" class="heCOpt">
+                <span><img src="images/help_span.png" /></span>
+                <img src="images/class1.png" />
+                <p></p>
+            </a>
+            <a href="javascript:" class="heCOpt">
+                <span><img src="images/help_span.png" /></span>
+                <img src="images/class2.png" />
+                <p></p>
+            </a>
+            <a href="javascript:" class="heCOpt">
+                <span><img src="images/help_span.png" /></span>
+                <img src="images/class3.png" />
+                <p></p>
+            </a>
+            <a href="javascript:" class="heCOpt">
+                <span><img src="images/help_span.png" /></span>
+                <img src="images/class4.png" />
+                <p></p>
+            </a>
+            <a href="javascript:" class="heCOpt">
+                <span><img src="images/help_span.png" /></span>
+                <img src="images/class5.png" />
+                <p></p>
+            </a>
+        </div> 
+    </div> 
+    <ul></ul>
+    </div>
+</div>
+</section>
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/common.js"></script>
+<script src="js/input.js"></script>
+<script>
+    var startX, startY;
+	var isLoad = true;
+    var type = "全部"
+	var page = 0;
+	var currPage = 1;
+    $(function(){
+		$("input").focus(function(){
+			$(this).parent().width("79%");
+			$(this).parent().next().show();
+			$(this).parent().next().text("搜索");
+		});
+		
+		//获取分类
+		$.get(basePath+"/operate/question/category.do",function(data){
+			if(data.status == 0){
+				$(".heClass").find("p").each(function(i){
+                    $(".heClass").find("p").eq(i).text(data.data[i].category);
+                });
+			}else{
+				textLog(data.message);
+			}
+		})
+		
+		//点击分类
+		$(".heClass a").click(function(){
+			currPage = 1;
+			isLoad = true;
+			type = $(this).find("p").text();
+			$(this).addClass("heCOpt1").siblings().removeClass("heCOpt1");
+			$.get(basePath+"/GW/question/getQuestion.do?type="+ type +"&page=1&rows=10",function(data){
+				if(data.status == 0){
+					$("ul").html("");
+					$.each(data.data,function(i,item){
+						var detail = "{\"questionId\":\"" +item.questionId+ "\",\"question\":\"" +myencodeURI(item.question)+ "\",\"answer\":\"" +myencodeURI(item.answer)+ "\"}";  
+						var url = "helpDetails.html?detail="+ detail;
+						var li = "<li><a href="+ url +">"+ item.question +"</a><img src='images/set_a.png'></li>";
+						$(li).appendTo("ul");
+					})
+				}else{
+					textLog(data.message);
+				}
+			})
+			
+			$.get(basePath+"/GW/question/getQuestion.do?type="+ type,function(data){
+				if(data.status == 0){
+					page = Math.ceil(data.data.length/10);
+				}else{
+					textLog(data.message);
+				}
+			})
+		});
+		
+		$(".heClass a:first").click();
+		
+		//ul下来
+		$("ul").bind("touchstart",function(e){
+			var touch = e.originalEvent.targetTouches[0];
+			startX = Number(touch.clientX);
+			startY = Number(touch.clientY);
+		});
+		$("ul").bind("touchmove",function(e){
+			var documentH = $(document).height();
+			var windowH = $(window).height();
+			var scrollT = $(window).scrollTop();
+			if(documentH <= (windowH+scrollT)){
+				$(document).bind("touchmove",function(e){
+					e.preventDefault();
+				});
+			}else{
+				$(document).unbind("touchmove");
+			}
+			var touch = e.originalEvent.targetTouches[0];
+			endX = Number(touch.clientX);
+			endY = Number(touch.clientY);
+			var moveY = startY - endY;
+			
+			//上拉
+			if(moveY > 10){
+				if(documentH <= (windowH+scrollT) && isLoad == true){
+					isLoad = false;
+					//加载。。
+					upLoad();
+				}
+			}
+			
+			if(moveY < -10){
+				$(document).unbind("touchmove");
+			}
+		});
+	})
+	
+	//初始化数据
+	function initData(){
+		//获取全部
+		type = "全部";
+		currPage = 1;
+		isLoad = true;
+		removeClass();
+		$.get(basePath+"/GW/question/getQuestion.do",function(data){
+			if(data.status == 0){
+				page = Math.ceil(data.data.length/10);
+			}else{
+				textLog(data.message);
+			}
+		});
+		
+		$.get(basePath+"/GW/question/getQuestion.do",{page:1,rows:10},function(data){
+			if(data.status == 0){
+				$("ul").html("");
+				$.each(data.data,function(i,item){
+					var detail = "{\"questionId\":\"" +item.questionId+ "\",\"question\":\"" +myencodeURI(item.question)+ "\",\"answer\":\"" +myencodeURI(item.answer)+ "\"}";  
+					var url = "helpDetails.html?detail="+ detail;
+					var li = "<li><a href="+ url +">"+ item.question +"</a><img src='images/set_a.png'></li>";
+					$(li).appendTo("ul");
+				})
+			}else{
+				textLog(data.message);
+			}
+		});
+	}
+	
+	//移除分类选中样式
+	function removeClass(){
+		$(".heClass .heCOpt").each(function(){
+            if($(this).hasClass("heCOpt1")){
+				$(this).removeClass("heCOpt1");
+			}
+        });
+	}
+	
+	//点击搜索按钮
+	function Search(obj){
+		if($(obj).text() == "搜索"){
+			var value = $(obj).parent().find("input").val();
+			if(value == ""){
+				textLog("请输入关键字");
+				return;
+			}
+			$(obj).parent().siblings(".heRes").show();
+			$(obj).parent().siblings(".heClass").hide();
+			currPage = 1;
+		    isLoad = true;
+			$.get(basePath+"/GW/question/getQuestion.do?page=1&rows=10&condition="+ value,function(data){
+				if(data.status == 0){
+					$("ul").html("");
+					var len = data.data.length;
+					page = Math.ceil(len/10);
+					type = "搜索";
+					$(".heRes span").text(len+"条包含“"+value+"”的回答");
+					$.each(data.data,function(i,item){
+						var detail = "{\"questionId\":\"" +item.questionId+ "\",\"question\":\"" +myencodeURI(item.question)+ "\",\"answer\":\"" +myencodeURI(item.answer)+ "\"}";                 
+						var url = "helpDetails.html?detail="+ detail;
+						var li = "<li><a href="+ url +">"+ item.question +"</a><img src='images/set_a.png'></li>";
+						$(li).appendTo("ul");
+					})
+				}else{
+					textLog(data.message);
+				}
+			})
+			$(obj).text("取消");
+		}else{
+			$(obj).parent().find("input").val("")
+			$(obj).text("搜索");
+			$(obj).prev().width("87.35%");
+			$(obj).hide();
+			$(obj).parent().siblings(".heRes").hide();
+			$(obj).parent().siblings(".heClass").show();
+			initData();
+		}
+	}
+	
+	//上拉加载更多
+	function upLoad(e){
+		currPage++;
+		if(currPage > page){
+			return;
+		}
+		var val = $(".heSeac input").val();
+		switch(type){
+		case "全部":
+			url = basePath+"/GW/question/getQuestion.do?page="+ currPage +"&rows=10";
+			break;
+		case "搜索":
+			url = basePath+"/GW/question/getQuestion.do?page="+ currPage +"&rows=10&condition="+ val;
+			break;
+		case "订单类":
+			url = basePath+"/GW/question/getQuestion.do?page="+ currPage +"&rows=10&type=订单类"
+			break;
+		case "合同类":
+			url = basePath+"/GW/question/getQuestion.do?page="+ currPage +"&rows=10&type=合同类"
+			break;
+		case "面签类":
+			url = basePath+"/GW/question/getQuestion.do?page="+ currPage +"&rows=10&type=面签类"
+			break;
+		case "账户类":
+			url = basePath+"/GW/question/getQuestion.do?page="+ currPage +"&rows=10&type=账户类"
+			break;
+		case "还款类":
+			url = basePath+"/GW/question/getQuestion.do?page="+ currPage +"&rows=10&type=还款类"
+			break;
+		}
+		$.get(url,function(data){
+			isLoad = true;
+			if(data.status == 0){
+				$.each(data.data,function(i,item){
+					var detail = "{\"questionId\":\"" +item.questionId+ "\",\"question\":\"" +myencodeURI(item.question)+ "\",\"answer\":\"" +myencodeURI(item.answer)+ "\"}";
+					var url = "helpDetails.html?detail="+ detail;
+					var li = "<li><a href="+ url +">"+ item.question +"</a><img src='images/set_a.png'></li>";
+					$(li).appendTo("ul");
+				})
+			}else{
+				textLog(data.message);
+			}
+		});
+	}
+	
+	function myencodeURI(str){
+		 return  encodeURIComponent(encodeURIComponent(str));
+	}
+</script>
+</body>
+</html>

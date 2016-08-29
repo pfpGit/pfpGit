@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=no" />
+    <meta http-equiv="cache-control" content="no-cache">
+    <title>帮助详情</title>
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<section>
+<div class="heDeta">
+    <h3></h3>
+    <p></p>
+    <div class="heLine"><span>以上内容是否有帮助</span></div>
+    <div class="heDa">
+        <a href="javascript:" class="heUse" onClick="heUse(this)">有用</a>
+        <a href="javascript:" class="heNouse" onClick="heNouse(this)">没用</a>
+    </div>
+</div>
+</section>
+<script src="js/jquery-1.12.3.min.js"></script>
+<script src="js/common.js"></script>
+<script>
+var Request = new Object();
+Request = GetRequest(); 
+var data = Request["detail"];
+var dataJson = JSON.parse(data);
+var questionId = dataJson.questionId;
+$(function(){
+	$(".heDeta h3").text(decodeURIComponent(dataJson.question));
+	$(".heDeta p").html(decodeURIComponent(dataJson.answer));
+})
+
+function heUse(obj){
+	if($(obj).hasClass("heUse1") || $(obj).next().hasClass("heNouse1")){
+		return;
+	}
+	$(obj).addClass("heUse1");
+	requestUse(1);
+}
+
+function heNouse(obj){
+	if($(obj).hasClass("heNouse1") || $(obj).prev().hasClass("heUse1")){
+		return;
+	}
+	$(obj).addClass("heNouse1");
+	requestUse(0);
+}
+
+function requestUse(act){
+	$.get(basePath+"/GW/question/edit.do",{questionId:questionId,act:act},function(data){
+		if(data.status == 1){
+			textLog(data.message);
+		}
+	});
+}
+</script>
+</body>
+</html>
